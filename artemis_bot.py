@@ -1,14 +1,43 @@
 import discord
-import config
-import responses
+import random
+
+
+def handle_responses(message) -> str:
+    p_message = message.lower()
+
+    if p_message == "hello":
+        return "Hey there!"
+
+    if p_message == "roll":
+        return str(random.randint(1, 6))
+
+    if p_message == "!help":
+        return "`This is a help message that you can modify`"
+
+
+PAPER_KEY = "PKKZSVR4ICWFB6YOHU04"
+PAPER_SECRET = "zaOMUgrElVp1ZFlchRIqM0oaOXlmcwePlifWKBdK"
+PAPER_URL = "https://paper-api.alpaca.markets"
+
+# Artemis Discord Bot
+APPLICATION_ID = "1074194991599071303"
+PUBLIC_KEY = "3ddefa610450ce93f1405bbe00e89bcb2fc80ca3f0eedd01e60fbd6e0aadbca3"
+CLIENT_ID = "1074194991599071303"
+
+INVITE_URL = "https://discord.com/api/oauth2/authorize?client_id=1074194991599071303&permissions=1634235578432&scope=bot"
+
+TOKEN = "MTA3NDE5NDk5MTU5OTA3MTMwMw.GDlMDz.YHrtENSw9RWbXm-5n78_roOS8Fg66KHuy5Tbvk"
+
+USERNAME = "Artemis_bot#4990"
 
 
 intents = discord.Intents.default()
 intents.message_content = True
 
+
 async def send_message(message, user_message, is_private):
     try:
-        response = responses.handle_responses(user_message)
+        response = handle_responses(user_message)
         if is_private:
             await message.author.send(response)
         else:
@@ -18,12 +47,12 @@ async def send_message(message, user_message, is_private):
 
 
 def run_artemis():
-    token = config.TOKEN
+    token = TOKEN
     client = discord.Client(intents=intents)
 
     @client.event
     async def on_ready():
-        print(f'{client.user} has connected to Discord!')
+        print(f"{client.user} has connected to Discord!")
 
     @client.event
     async def on_message(message):
@@ -34,12 +63,16 @@ def run_artemis():
         user_message = str(message.content)
         channel = str(message.channel)
 
-        print(f'{username} sent a message in {channel}: {user_message}')
+        print(f"{username} sent a message in {channel}: {user_message}")
 
-        if user_message[0] == '?':
+        if user_message[0] == "?":
             user_message = user_message[1:]
             await send_message(message, user_message, True)
         else:
             await send_message(message, user_message, False)
 
     client.run(token)
+
+
+if __name__ == "__main__":
+    run_artemis()

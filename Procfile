@@ -1,1 +1,1 @@
-worker: python artemis_run.py
+worker: python artemis_bot.py
