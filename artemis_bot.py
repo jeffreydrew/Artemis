@@ -19,7 +19,7 @@ def handle_responses(message) -> str:
     if p_message == "!help":
         return "`This is a help message that you can modify`"
 
-    if p_message == "how are you?":
+    if p_message == "how are you":
         return "I'm doing great, thanks for asking!"
 
     if p_message == 'update':
