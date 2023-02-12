@@ -1,4 +1,0 @@
-alpaca-trade-api
-alpaca-py
-discord.py
-responses
