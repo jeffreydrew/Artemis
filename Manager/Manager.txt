@@ -7,4 +7,7 @@ Once the manager finds an entry or exit point based on :
     else:
         look for exit point
 
-it will create a trade directive object and pipe it to the Trader
+it will return a trade directive object and pipe it to the Trader
+
+Flow:
+Market data -> Manager -> Trade directive -> Trader -> Trade
