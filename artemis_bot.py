@@ -1,6 +1,7 @@
 import discord
 import random
 import config
+import responses
 
 # --------------------------------------------------------------------------------
 #                                      Responses
@@ -21,6 +22,9 @@ def handle_responses(message) -> str:
 
     if p_message == "how are you?":
         return "I'm doing great, thanks for asking!"
+
+    if p_message == 'update':
+        return "I'm currently being updated"
 
 
 intents = discord.Intents.default()
