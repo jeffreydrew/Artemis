@@ -1,6 +1,6 @@
 import discord
 import random
-from config import *
+from .config import TOKEN
 
 # --------------------------------------------------------------------------------
 #                                      Responses
