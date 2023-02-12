@@ -1,6 +1,6 @@
 import discord
 import random
-import config
+from config import *
 
 # --------------------------------------------------------------------------------
 #                                      Responses
