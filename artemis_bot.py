@@ -42,7 +42,7 @@ async def send_message(message, user_message, is_private):
 
 
 def run_artemis():
-    token = config.TOKEN
+    token = TOKEN
     client = discord.Client(intents=intents)
 
     @client.event
