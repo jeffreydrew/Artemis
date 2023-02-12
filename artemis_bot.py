@@ -1,6 +1,7 @@
 import discord
 import random
-from config import TOKEN
+TOKEN = 'MTA3NDE5NDk5MTU5OTA3MTMwMw.GDlMDz.YHrtENSw9RWbXm-5n78_roOS8Fg66KHuy5Tbvk'
+
 # --------------------------------------------------------------------------------
 #                                      Responses
 # --------------------------------------------------------------------------------
