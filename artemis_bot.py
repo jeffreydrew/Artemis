@@ -1,7 +1,6 @@
 import discord
 import random
 import config
-import responses
 
 # --------------------------------------------------------------------------------
 #                                      Responses
