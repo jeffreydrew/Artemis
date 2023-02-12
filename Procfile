@@ -1,0 +1,1 @@
+worker: python artemis_run.py
