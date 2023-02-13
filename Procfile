@@ -1,1 +1,1 @@
-worker: python artemis.py
+worker: python discord/artemis.py
