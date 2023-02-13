@@ -24,7 +24,7 @@ def sell():
 
 
 trades = 0
-while trades < 10:
+while trades < 100:
     buy()
     time.sleep(5)
     sell()
