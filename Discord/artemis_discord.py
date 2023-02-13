@@ -49,6 +49,5 @@ def run_artemis():
 
     client.run(token)
 
-
 if __name__ == "__main__":
     run_artemis()

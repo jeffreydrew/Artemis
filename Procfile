@@ -1,2 +1,2 @@
-discord: python Discord/artemis.py
-trader: python Trader/simple_buy.py
+discord: python Discord/artemis_discord.py
+trader: python artemis_core.py
