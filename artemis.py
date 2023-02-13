@@ -1,5 +1,5 @@
 import discord
-import random
+from config import *
 from responses import *
 
 intents = discord.Intents.default()
@@ -19,7 +19,7 @@ async def send_message(message, user_message, is_private):
 
 
 def run_artemis():
-    token = "MTA3NDE5NDk5MTU5OTA3MTMwMw.GDlMDz.YHrtENSw9RWbXm-5n78_roOS8Fg66KHuy5Tbvk"
+    token = TOKEN
     client = discord.Client(intents=intents)
 
     @client.event
