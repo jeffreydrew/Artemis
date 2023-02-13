@@ -1,27 +1,10 @@
 import discord
 import random
+from responses import *
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-
-def handle_responses(message) -> str:
-    p_message = message.lower()
-
-    if p_message == "hello":
-        return "Hey there!"
-
-    if p_message == "roll":
-        return str(random.randint(1, 6))
-
-    if p_message == "!help":
-        return "`This is a help message that you can modify`"
-
-    if p_message == "how are you":
-        return "I'm doing great, thanks for asking!"
-
-    if p_message == "update":
-        return "I'm currently being updated"
 
 
 async def send_message(message, user_message, is_private):
