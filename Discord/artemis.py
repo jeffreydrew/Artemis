@@ -1,13 +1,14 @@
 import os, sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import discord
 from config import *
 from responses import *
+from Trader.simple_buy import *
 
 intents = discord.Intents.default()
 intents.message_content = True
-
 
 
 async def send_message(message, user_message, is_private):

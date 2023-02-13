@@ -1,1 +1,2 @@
-worker: python discord/artemis.py; python Trader/simple_buy.py
+discord: python Discord/artemis.py
+trader: python Trader/simple_buy.py

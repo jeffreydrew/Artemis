@@ -23,11 +23,12 @@ def sell():
     )
 
 
-trades = 0
-while trades < 100:
-    buy()
-    time.sleep(5)
-    sell()
-    trades += 1
+def loop():
+    trades = 0
+    while trades < 5:
+        buy()
+        time.sleep(5)
+        sell()
+        trades += 1
 
 
