@@ -9,7 +9,11 @@ use pinbar on candlestick,
 stoploss 设在尾巴地下，
 rsi第三次地点
 
-multiscale
+multiscaling
 
 rsi strategy: 
 find three rising rsi lows, find price matching lower
+
+darvas box
+
+pinbar method

@@ -13,3 +13,8 @@ INVITE_URL = 'https://discord.com/api/oauth2/authorize?client_id=107419499159907
 TOKEN = 'MTA3NDE5NDk5MTU5OTA3MTMwMw.GDlMDz.YHrtENSw9RWbXm-5n78_roOS8Fg66KHuy5Tbvk'
 
 USERNAME = 'Artemis_bot#4990'
+
+#Polygon:
+API_KEY_POLYGON = "qxopP6_J4g7SNqKAFlq8lqEFwufYg80L"
+
+

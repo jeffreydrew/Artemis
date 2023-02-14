@@ -2,11 +2,10 @@ import os, sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Historical_data import get_data
+from Historical_data.get_data import get_data_function
 
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+import sqlite3
 
 
 class Time_Machine:
@@ -15,12 +14,9 @@ class Time_Machine:
         self.period = period
         self.interval = interval
         self.symbol = symbol
-        self.data = self.get_data()
+        self.data = self.get_data_file()
 
     def get_data_file(self):
-        get_data.get_data(self.symbol, self.period, self.interval)
+        return get_data_function(self.symbol, self.period, self.interval)
 
-
-t = Time_Machine("1d", "5m", "aapl")
-data = t.get_data_file()
-print(t.symbol, t.period, t.interval)
+    

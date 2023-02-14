@@ -6,7 +6,7 @@ Backtesting_path = "Backtesting/"
 
 
 # get 1 minute ticker info for aapl from 1/1/23 to 2/1/23
-def get_data(symbol: str, period: str, interval: str):
+def get_data_function(symbol: str, period: str, interval: str):
     ticker = yf.Ticker(symbol)
     ticker_data = ticker.history(period=period, interval=interval)
     # keep first 5 columns
@@ -29,4 +29,3 @@ interval: data interval (1m data is only for available for last 7 days, and data
 start: If not using period - in the format (yyyy-mm-dd) or datetime.
 
 end: If not using period - in the format (yyyy-mm-dd) or datetime."""
-
