@@ -1,0 +1,5 @@
+find a way to get rsi from polygon api live
+calculate slope of rsi based on last three points and next point to find local minimum
+
+when three minimums rising and price is falling, momentum inversion and enter
+

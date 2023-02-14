@@ -1,0 +1,15 @@
+rsi based
+
+scalping/sniping
+
+use pinbar on candlestick, 
+
+
+看pinbar，50%pinbar入点
+stoploss 设在尾巴地下，
+rsi第三次地点
+
+multiscale
+
+rsi strategy: 
+find three rising rsi lows, find price matching lower

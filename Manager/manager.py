@@ -11,5 +11,4 @@ class Manager:
     def test_strategy(self):
         pass
 
-m = Manager()
-m.test_strategy()
+
