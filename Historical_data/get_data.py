@@ -16,6 +16,7 @@ def get_data(symbol: str, period: str, interval: str):
 
     # convert to csv and save to Historical_data/aapl.csv and Backtesting/aapl.csv
     ticker_data.to_csv(f"{Historical_data_path}/{symbol}_{period}_{interval}.csv")
+    return ticker_data
 
 
 """
