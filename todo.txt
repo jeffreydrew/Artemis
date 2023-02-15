@@ -2,4 +2,8 @@ calculate slope of rsi based on last three points and next point to find local m
 
 when three minimums rising and price is falling, momentum inversion and enter
 
-implement functioning testing universe
+Backtesting:
+make plot show when buy and when sell
+
+make plot concurrently show rsi
+

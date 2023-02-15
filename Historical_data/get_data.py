@@ -1,5 +1,5 @@
 import yfinance as yf
-import pandas as pd
+import os
 
 Historical_data_path = "Historical_data/"
 Backtesting_path = "Backtesting/"
@@ -29,3 +29,18 @@ interval: data interval (1m data is only for available for last 7 days, and data
 start: If not using period - in the format (yyyy-mm-dd) or datetime.
 
 end: If not using period - in the format (yyyy-mm-dd) or datetime."""
+
+
+def clear_historical_data():
+    # input confirmation
+    confirmation = input(
+        "Are you sure you want to clear the Historical_data folder? (y/n): "
+    )
+    if confirmation == "y":
+        # clear the Historical_data folder of all csv files
+        for file in os.listdir(Historical_data_path):
+            print(f'{file} deleted')
+            if file.endswith(".csv"):
+                os.remove(os.path.join(Historical_data_path, file))
+
+

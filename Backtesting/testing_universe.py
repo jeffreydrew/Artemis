@@ -12,17 +12,19 @@ if __name__ == "__main__":
     #                   Prepare the universe
     # ---------------------------------------------------------
 
-    t = Time_Machine("1d", "1m", "amzn")
+    t = Time_Machine("1d", "5m", "tsla")
     m = Manager("Backtesting/testing.db")
 
     # create database
     conn = sqlite3.connect("Backtesting/testing.db")
     c = conn.cursor()
     # clear database
-    c.execute("DROP TABLE IF EXISTS {}".format(t.symbol))
+    c.execute("DROP TABLE IF EXISTS {}".format(f"{t.symbol}_{t.period}_{t.interval}"))
+    # # clear table
+    # c.execute("DELETE FROM {}".format(f"{t.symbol}"))
     c.execute(
-        "CREATE TABLE IF NOT EXISTS {} (Id integer, Open real, High real, Low real, Close real, Volume real)".format(
-            t.symbol
+        "CREATE TABLE IF NOT EXISTS {} (Id integer, Open real, High real, Low real, Close real, Volume real, Action text)".format(
+            f"{t.symbol}_{t.period}_{t.interval}"
         )
     )
 
@@ -43,7 +45,9 @@ if __name__ == "__main__":
         print(row)
         # insert the row into the database
         c.execute(
-            "INSERT INTO {} VALUES (?, ?, ?, ?, ?, ?)".format(t.symbol),
+            "INSERT INTO {} VALUES (?, ?, ?, ?, ?, ?, ?)".format(
+                f"{t.symbol}_{t.period}_{t.interval}"
+            ),
             (
                 now,
                 row["Open"],
@@ -51,6 +55,7 @@ if __name__ == "__main__":
                 row["Low"],
                 row["Close"],
                 row["Volume"],
+                "None",
             ),
         )
         conn.commit()
@@ -58,15 +63,31 @@ if __name__ == "__main__":
         # ---------------------------------------------------------
         #                   Implement strategy
         # ---------------------------------------------------------
-        if now > 13:
-            print(m.test_strategy(t.symbol))
+        action = m.unit_test_strategy(
+            t.symbol, t.period, t.interval, now, len(t.data) - 1
+        )
+        print(f"===================={action}====================")
+
         # ---------------------------------------------------------
         #                       Visualize
         # ---------------------------------------------------------
-        plt.plot(visible["Close"])
-        plt.pause(0.01)
-        plt.clf() if now != len(t.data) - 1 else plt.show()
+        def visualize():
+            # name of plot is name of table
+            plt.title(f"{t.symbol}_{t.period}_{t.interval}")
 
+            x = visible["Close"]
+            y = visible.index
+
+            plt.plot(y, x, "b-")
+            plt.pause(0.0001)
+
+        plt.clf() #if now == len(t.data) - 1 else plt.show()
         # find way to implement buy signal, will need some sort of persistance
+
         print(now)
         now += 1
+
+        visualize()
+
+    # simulation stats
+    m.show_order_summary()

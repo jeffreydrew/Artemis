@@ -4,15 +4,23 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import sqlite3
 
+class Account:
+    def __init__(self, balance: float):
+        self.__principle = balance
+        self.balance = balance
 
+    def get_principle(self):
+        return self.__principle
+    
 class Manager:
     def __init__(self, database_path: str):
         self.database_path = database_path
         self.conn = sqlite3.connect(self.database_path)
         self.c = self.conn.cursor()
-        self.portfolio = 0
+        self.portfolio = {}
         self.rsi = []
         self.orders = {'buys': 0, 'sells': 0}
+        self.account = Account(10000)
 
     def commit(self):
         try:
@@ -20,27 +28,48 @@ class Manager:
         except:
             print("Error committing to database")
 
-    def test_strategy(self, symbol: str):
+    def unit_test_strategy(self, symbol: str, period: str, interval: str, now, end):
+        #get last close price
+        self.c.execute("SELECT * FROM {} ORDER BY Id DESC LIMIT 1".format(f"{symbol}_{period}_{interval}"))
+        row = self.c.fetchone()
+        close_price = row[4]
+        #execute one buy order at the first price
+        if now == 0:
+            return self.buy_signal(close_price)
+        #execute one sell order at the last price
+        if now == end:
+            return self.sell_signal(close_price)
+        
+    
+    def v2_test_strategy(self, symbol: str, period: str, interval: str, now, end):
+        pass
+
+    def test_strategy(self, symbol: str, period: str, interval: str, now, end):
         # if price of last period is greater than the price of the period before that and portfolio is 0, buy
         # if price of last period is less than the price of the period before that and portfolio is 1, sell
         # if price of last period is less than the price of the period before that and portfolio is 0, do nothing
         # if price of last period is greater than the price of the period before that and portfolio is 1, do nothing
 
         # select the last 2 rows from the table named symbol and put the close prices into a list
-        self.c.execute("SELECT * FROM {} ORDER BY Id DESC LIMIT 2".format(symbol))
+        self.c.execute("SELECT * FROM {} ORDER BY Id DESC LIMIT 2".format(f"{symbol}_{period}_{interval}"))
         rows = self.c.fetchall()
         close_prices = []
         for i in range(2):
             close_prices.append(rows[-i][4])
+        if len(close_prices) < 2:
+            close_prices.prepend(0)
 
         # if the price of the last period is greater than the price of the period before that and portfolio is 0, buy
         if close_prices[0] > close_prices[1]:
             self.portfolio = 1
-            return self.signal_buy()
+            return self.buy_signal(close_prices[0])
         # if the price of the last period is less than the price of the period before that and portfolio is 1, sell
         elif close_prices[0] < close_prices[1] and self.portfolio != 0:
             self.portfolio = 0
-            return self.signal_sell()
+            return self.sell_signal(close_prices[0])
+
+        if now == end:
+            return self.sell_signal(close_prices[0])
 
         return
 
@@ -113,12 +142,25 @@ class Manager:
     def __check_for_RSI_min(self):
         pass
 
-    def signal_buy(self) -> str:
-        self.portfolio += 1
+    def buy_signal(self, price) -> str:
+        self.account.balance -= price
+        if price not in self.portfolio:
+            self.portfolio[price] = 1
+        else:
+            self.portfolio[price] += 1   
         self.orders['buys'] += 1
-        return "================Buy================"
+        return 'buy'
 
-    def signal_sell(self) -> str:
-        self.portfolio = 0
+    def sell_signal(self, price) -> str:
+        self.account.balance += price
+        if price not in self.portfolio:
+            self.portfolio[price] = 1
+        else:
+            self.portfolio[price] += 1
         self.orders['sells'] += 1
-        return "================Sell==============="
+        return 'sell'
+
+    def show_order_summary(self):
+        print("Buys: {}".format(self.orders['buys']))
+        print("Sells: {}".format(self.orders['sells']))
+        print("Profit: {}".format(self.account.balance - self.account.get_principle()))
