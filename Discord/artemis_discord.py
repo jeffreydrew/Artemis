@@ -7,8 +7,8 @@ from config import *
 from responses import *
 from Trader.simple_buy import *
 
-intents = discord.Intents.default()
-intents.message_content = True
+intents = discord.Intents.all()
+# intents.message_content = True
 
 
 async def send_message(message, user_message, is_private):
