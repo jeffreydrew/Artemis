@@ -10,16 +10,39 @@ class Manager:
         self.database_path = database_path
         self.conn = sqlite3.connect(self.database_path)
         self.c = self.conn.cursor()
+        self.portfolio = 0
+        self.rsi = []
+        self.orders = {'buys': 0, 'sells': 0}
 
     def commit(self):
         try:
             self.conn.commit()
         except:
             print("Error committing to database")
-        
-    def test_strategy(self):
-        
-        pass
+
+    def test_strategy(self, symbol: str):
+        # if price of last period is greater than the price of the period before that and portfolio is 0, buy
+        # if price of last period is less than the price of the period before that and portfolio is 1, sell
+        # if price of last period is less than the price of the period before that and portfolio is 0, do nothing
+        # if price of last period is greater than the price of the period before that and portfolio is 1, do nothing
+
+        # select the last 2 rows from the table named symbol and put the close prices into a list
+        self.c.execute("SELECT * FROM {} ORDER BY Id DESC LIMIT 2".format(symbol))
+        rows = self.c.fetchall()
+        close_prices = []
+        for i in range(2):
+            close_prices.append(rows[-i][4])
+
+        # if the price of the last period is greater than the price of the period before that and portfolio is 0, buy
+        if close_prices[0] > close_prices[1]:
+            self.portfolio = 1
+            return self.signal_buy()
+        # if the price of the last period is less than the price of the period before that and portfolio is 1, sell
+        elif close_prices[0] < close_prices[1] and self.portfolio != 0:
+            self.portfolio = 0
+            return self.signal_sell()
+
+        return
 
     def RisingRSI(self):
         # calculate RSI when it has three rising lows
@@ -32,11 +55,10 @@ class Manager:
     # calculate the RSI of the last 14 periods, starts on the 15th period
     def __calculate_rsi(self):
         # connect to the candlestick database and pull the price of the last 14 periods
-        
+
         # select the last 14 rows
         self.c.execute("SELECT * FROM candles ORDER BY id DESC LIMIT 14")
         rows = self.c.fetchall()
-
 
         # put the last 14 close prices into a list
         close_prices = []
@@ -61,8 +83,6 @@ class Manager:
         return rsi
 
     def __calculate_macd(self, data: str):
-    
-        
         # select the last 14 rows
         self.c.execute("SELECT * FROM candles ORDER BY id DESC LIMIT 14")
         rows = self.c.fetchall()
@@ -92,3 +112,13 @@ class Manager:
 
     def __check_for_RSI_min(self):
         pass
+
+    def signal_buy(self) -> str:
+        self.portfolio += 1
+        self.orders['buys'] += 1
+        return "================Buy================"
+
+    def signal_sell(self) -> str:
+        self.portfolio = 0
+        self.orders['sells'] += 1
+        return "================Sell==============="

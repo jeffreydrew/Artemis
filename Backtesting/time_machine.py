@@ -4,9 +4,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Historical_data.get_data import get_data_function
 
-import pandas as pd
-import sqlite3
-
 
 class Time_Machine:
     # each time machine instance is unique to a specific symbol to test in isolated environment
@@ -18,5 +15,3 @@ class Time_Machine:
 
     def get_data_file(self):
         return get_data_function(self.symbol, self.period, self.interval)
-
-    

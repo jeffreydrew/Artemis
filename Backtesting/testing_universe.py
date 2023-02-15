@@ -4,7 +4,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Backtesting.time_machine import Time_Machine
 from Manager.manager import Manager
-import pandas as pd
 import matplotlib.pyplot as plt
 import sqlite3
 
@@ -12,13 +11,17 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     #                   Prepare the universe
     # ---------------------------------------------------------
-    t = Time_Machine("1d", "1m", "aapl")
+
+    t = Time_Machine("1d", "1m", "amzn")
+    m = Manager("Backtesting/testing.db")
 
     # create database
     conn = sqlite3.connect("Backtesting/testing.db")
     c = conn.cursor()
+    # clear database
+    c.execute("DROP TABLE IF EXISTS {}".format(t.symbol))
     c.execute(
-        "CREATE TABLE IF NOT EXISTS {} (Date text, Open real, High real, Low real, Close real, Volume real)".format(
+        "CREATE TABLE IF NOT EXISTS {} (Id integer, Open real, High real, Low real, Close real, Volume real)".format(
             t.symbol
         )
     )
@@ -40,8 +43,9 @@ if __name__ == "__main__":
         print(row)
         # insert the row into the database
         c.execute(
-            "INSERT INTO {} VALUES (0, ?, ?, ?, ?, ?)".format(t.symbol),
+            "INSERT INTO {} VALUES (?, ?, ?, ?, ?, ?)".format(t.symbol),
             (
+                now,
                 row["Open"],
                 row["High"],
                 row["Low"],
@@ -54,8 +58,8 @@ if __name__ == "__main__":
         # ---------------------------------------------------------
         #                   Implement strategy
         # ---------------------------------------------------------
-        m = Manager("Backtesting/testing.db")
-
+        if now > 13:
+            print(m.test_strategy(t.symbol))
         # ---------------------------------------------------------
         #                       Visualize
         # ---------------------------------------------------------
@@ -64,5 +68,5 @@ if __name__ == "__main__":
         plt.clf() if now != len(t.data) - 1 else plt.show()
 
         # find way to implement buy signal, will need some sort of persistance
-
+        print(now)
         now += 1
