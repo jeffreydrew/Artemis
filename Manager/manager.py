@@ -61,6 +61,7 @@ class Manager:
         return rsi
 
     def __calculate_macd(self, data: str):
+    
         
         # select the last 14 rows
         self.c.execute("SELECT * FROM candles ORDER BY id DESC LIMIT 14")
@@ -88,3 +89,6 @@ class Manager:
         macd = short_moving_average - long_moving_average
 
         return macd
+
+    def __check_for_RSI_min(self):
+        pass

@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     #                   Prepare the universe
     # ---------------------------------------------------------
-    t = Time_Machine("5d", "5m", "aapl")
+    t = Time_Machine("1d", "1m", "aapl")
 
     # create database
     conn = sqlite3.connect("Backtesting/testing.db")
@@ -56,8 +56,6 @@ if __name__ == "__main__":
         # ---------------------------------------------------------
         m = Manager("Backtesting/testing.db")
 
-
-
         # ---------------------------------------------------------
         #                       Visualize
         # ---------------------------------------------------------
@@ -68,4 +66,3 @@ if __name__ == "__main__":
         # find way to implement buy signal, will need some sort of persistance
 
         now += 1
-
