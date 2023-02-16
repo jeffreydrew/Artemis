@@ -81,13 +81,13 @@ if __name__ == "__main__":
             plt.plot(y, x, "b-")
             plt.pause(0.0001)
 
-        plt.clf() #if now == len(t.data) - 1 else plt.show()
+        plt.clf()  # if now == len(t.data) - 1 else plt.show()
         # find way to implement buy signal, will need some sort of persistance
 
         print(now)
         now += 1
 
-        visualize()
+        # visualize()
 
     # simulation stats
     m.show_order_summary()

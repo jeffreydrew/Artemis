@@ -42,10 +42,10 @@ class Manager:
         close_price = row[4]
         # execute one buy order at the first price
         if now == 0:
-            return self.buy_signal(close_price)
+            return self.buy_signal(1, close_price)
         # execute one sell order at the last price
         if now == end:
-            return self.sell_signal(close_price)
+            return self.sell_signal(1, close_price, 'all')
 
     def v2_test_strategy(self, symbol: str, period: str, interval: str, now, end):
         pass
@@ -72,14 +72,14 @@ class Manager:
         # if the price of the last period is greater than the price of the period before that and portfolio is 0, buy
         if close_prices[0] > close_prices[1]:
             self.portfolio = 1
-            return self.buy_signal(close_prices[0], self.account.balance / close_prices[0])
+            return self.buy_signal(self.account.balance / close_prices[0], close_prices[0])
         # if the price of the last period is less than the price of the period before that and portfolio is 1, sell
         elif close_prices[0] < close_prices[1] and self.portfolio != 0:
             self.portfolio = 0
-            return self.sell_signal(close_prices[0])
+            return self.sell_signal(1, close_prices[0], 'all')
 
         if now == end:
-            return self.sell_signal(close_prices[0])
+            return self.sell_signal(1, close_prices[0], 'all')
 
         return
 
@@ -152,10 +152,13 @@ class Manager:
     def __find_RSI_min(self):
         pass
 
-    def find_price_local_min(self):
+    def __find_RSI_max(self):
         pass
 
-    def find_price_local_max(self):
+    def __find_price_local_min(self):
+        pass
+
+    def __find_price_local_max(self):
         pass
 
     def calculate_cost_basis(self):
@@ -163,10 +166,9 @@ class Manager:
             self.account.cost_basis += price * self.portfolio[price]
         self.account.cost_basis /= sum(self.portfolio.values())
         return self.account.cost_basis
-    # -------------------------------------------------------------------------------------------------------------------
-    #                                                       Order Functions
-    # -------------------------------------------------------------------------------------------------------------------
-
+    # -----------------------------------------------------------------------------------
+    #                                    Order Functions
+    # -----------------------------------------------------------------------------------
     def buy_signal(self, qty, price) -> str:
         self.account.balance -= price * qty
         if price not in self.portfolio:
@@ -176,9 +178,12 @@ class Manager:
         self.orders["buys"] += 1
         return "buy"
 
-    def sell_signal(self, qty, price, order_type="lifo") -> str:
+    def sell_signal(self, qty, price, order_type="all") -> str:
         if not self.portfolio:
             return "no shares to sell"
+        
+        if order_type == "all":
+            qty = sum(self.portfolio.values())
         self.account.balance += price * qty
         # update portfolio
         if order_type == "lifo":
@@ -201,20 +206,19 @@ class Manager:
             self.__liquidate()
             pass
 
+        self.orders["sells"] += 1
         return "sell"
 
     def __liquidate(self):
-        # sell all shares in portfolio and clear portfolio
-        for price in self.portfolio:
-            self.account.balance += price * self.portfolio[price]
         self.portfolio = {}
         return
 
-    # -------------------------------------------------------------------------------------------------------------------
-    #                                                       Results
-    # -------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------
+    #                                    Results
+    # -----------------------------------------------------------------------------------
 
     def show_order_summary(self):
         print("Buys: {}".format(self.orders["buys"]))
         print("Sells: {}".format(self.orders["sells"]))
+        print(self.account.balance)
         print("Profit: {}".format(self.account.balance - self.account.get_principle()))
