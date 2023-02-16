@@ -31,7 +31,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     #                   Run the universe
     # ---------------------------------------------------------
-    now = 0
+    now = 1
     while now < len(t.data):
         # visible is the first now rows of the data
         visible = t.data.iloc[:now, :]

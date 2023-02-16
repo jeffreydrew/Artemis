@@ -22,6 +22,7 @@ class Manager:
         self.cursor = self.conn.cursor()
         self.portfolio = {}
         self.rsi = []
+        self.macd = []
         self.orders = {"buys": 0, "sells": 0}
         self.account = Account(10000)
 
@@ -41,7 +42,7 @@ class Manager:
         row = self.cursor.fetchone()
         close_price = row[4]
         # execute one buy order at the first price
-        if now == 0:
+        if now == 1:
             return self.buy_signal(1, close_price)
         # execute one sell order at the last price
         if now == end:
@@ -91,7 +92,55 @@ class Manager:
 
         return
 
-    # calculate the RSI of the last 14 periods, starts on the 15th period
+    def FallingRSI(self):
+        # calculate RSI when it has three falling highs
+        # math stuff
+        # rsi = 100 - (100 / (1 + RS))
+        # RS = average gain of last 14 days / average loss of last 14 periods
+
+        return
+
+    def Macd_crossover(self, symbol: str, period: str, interval: str, now, end):
+        # calculate MACD when it crosses over
+        # math stuff
+        # MACD = 12 period EMA - 26 period EMA
+        # Signal Line = 9 period EMA of MACD
+
+        # select the last 14 rows
+        self.cursor.execute(
+            "SELECT * FROM {} ORDER BY Id DESC LIMIT 14".format(
+                f"{symbol}_{period}_{interval}"
+            )
+        )
+        rows = self.cursor.fetchall()
+
+        # put the last 14 close prices into a list
+        close_prices = []
+        for i in range(14):
+            close_prices.append(rows[-i][4])
+
+        macd = self.__calculate_macd(close_prices)
+
+        # calculate the signal line
+        signal_line = 0
+        for i in range(9):
+            signal_line += macd[i]
+        signal_line = signal_line / 9
+
+        # if the MACD crosses over the signal line, buy
+        if macd[0] > signal_line[0] and macd[1] < signal_line[1]:
+            return self.buy_signal(1, close_prices[0])
+        # if the MACD crosses under the signal line, sell
+        elif macd[0] < signal_line[0] and macd[1] > signal_line[1]:
+            return self.sell_signal(1, close_prices[0], 'all')
+
+        if now == end:
+            return self.sell_signal(1, close_prices[0], 'all')
+
+        return
+    # -----------------------------------------------------------------------------------
+    #                                Helper Functions
+    # -----------------------------------------------------------------------------------
     def __calculate_rsi(self):
         # connect to the candlestick database and pull the price of the last 14 periods
 
@@ -121,15 +170,21 @@ class Manager:
 
         return rsi
 
-    def __calculate_macd(self, data: str):
+    def __calculate_macd(self, symbol: str, period: str, interval: str, now, end):
+        
         # select the last 14 rows
-        self.cursor.execute("SELECT * FROM candles ORDER BY id DESC LIMIT 14")
+        self.cursor.execute(
+            "SELECT * FROM {} ORDER BY Id DESC LIMIT 1".format(
+                f"{symbol}_{period}_{interval}"
+            )
+        )        
         rows = self.cursor.fetchall()
 
-        # put the last 14 close prices into a list
+        # put all closes prices into list
         close_prices = []
-        for i in range(14):
+        for i in range(len(rows)):
             close_prices.append(rows[-i][4])
+
 
         # calculate the 12 and 26 period moving averages
         short_period = 12
