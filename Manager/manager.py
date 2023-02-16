@@ -19,7 +19,7 @@ class Manager:
     def __init__(self, database_path: str):
         self.database_path = database_path
         self.conn = sqlite3.connect(self.database_path)
-        self.c = self.conn.cursor()
+        self.cursor = self.conn.cursor()
         self.portfolio = {}
         self.rsi = []
         self.orders = {"buys": 0, "sells": 0}
@@ -33,12 +33,12 @@ class Manager:
 
     def unit_test_strategy(self, symbol: str, period: str, interval: str, now, end):
         # get last close price
-        self.c.execute(
+        self.cursor.execute(
             "SELECT * FROM {} ORDER BY Id DESC LIMIT 1".format(
                 f"{symbol}_{period}_{interval}"
             )
         )
-        row = self.c.fetchone()
+        row = self.cursor.fetchone()
         close_price = row[4]
         # execute one buy order at the first price
         if now == 0:
@@ -57,12 +57,12 @@ class Manager:
         # if price of last period is greater than the price of the period before that and portfolio is 1, do nothing
 
         # select the last 2 rows from the table named symbol and put the close prices into a list
-        self.c.execute(
+        self.cursor.execute(
             "SELECT * FROM {} ORDER BY Id DESC LIMIT 2".format(
                 f"{symbol}_{period}_{interval}"
             )
         )
-        rows = self.c.fetchall()
+        rows = self.cursor.fetchall()
         close_prices = []
         for i in range(2):
             close_prices.append(rows[-i][4])
@@ -96,8 +96,8 @@ class Manager:
         # connect to the candlestick database and pull the price of the last 14 periods
 
         # select the last 14 rows
-        self.c.execute("SELECT * FROM candles ORDER BY id DESC LIMIT 14")
-        rows = self.c.fetchall()
+        self.cursor.execute("SELECT * FROM candles ORDER BY id DESC LIMIT 14")
+        rows = self.cursor.fetchall()
 
         # put the last 14 close prices into a list
         close_prices = []
@@ -123,8 +123,8 @@ class Manager:
 
     def __calculate_macd(self, data: str):
         # select the last 14 rows
-        self.c.execute("SELECT * FROM candles ORDER BY id DESC LIMIT 14")
-        rows = self.c.fetchall()
+        self.cursor.execute("SELECT * FROM candles ORDER BY id DESC LIMIT 14")
+        rows = self.cursor.fetchall()
 
         # put the last 14 close prices into a list
         close_prices = []
@@ -220,5 +220,5 @@ class Manager:
     def show_order_summary(self):
         print("Buys: {}".format(self.orders["buys"]))
         print("Sells: {}".format(self.orders["sells"]))
-        print(self.account.balance)
-        print("Profit: {}".format(self.account.balance - self.account.get_principle()))
+        print("Balance: ${}".format(round(self.account.balance, 2)))
+        print("Profit: ${}".format(round(self.account.balance - self.account.get_principle(), 2)))

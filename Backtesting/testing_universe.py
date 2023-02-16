@@ -42,6 +42,7 @@ if __name__ == "__main__":
         # update database
         # row is 'now'th row of self.data
         row = t.data.iloc[now, :]
+        # print everything in row except for Name
         print(row)
         # insert the row into the database
         c.execute(
