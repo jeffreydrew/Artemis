@@ -14,6 +14,10 @@ assets_of_interest = [
     "spy",
     "tsla",
 ]
+
+period = "2d"
+interval = "5m"
+
 summaries = []
 if __name__ == "__main__":
     # ------------------------------------------------------------------------------------------------------------
@@ -24,7 +28,7 @@ if __name__ == "__main__":
         #                   Prepare the universe
         # ---------------------------------------------------------
 
-        t = Time_Machine("2d", "5m", asset)
+        t = Time_Machine(period, interval, asset)
         m = Manager("Backtesting/testing.db", asset)
 
         # create database

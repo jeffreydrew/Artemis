@@ -110,13 +110,14 @@ class Manager:
         if len(macds) < 2:
             return
         if macds[0] < 0 and macds[1] > 0:
-            return self.buy_signal(1, last_close_price)
+            return self.buy_signal(1, last_close_price), macds
         elif macds[0] > 0 and macds[1] < 0:
-            return self.sell_signal(1, 0, "all")
+            return self.sell_signal(1, last_close_price, "all"), macds
 
         if now == end:
-            return self.sell_signal(1, last_close_price, "all")
+            return self.sell_signal(1, last_close_price, "all"), macds
 
+        return None, macds
     # -----------------------------------------------------------------------------------
     #                                Helper Functions
     # -----------------------------------------------------------------------------------
