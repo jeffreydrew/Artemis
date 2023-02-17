@@ -39,8 +39,9 @@ def clear_historical_data():
     if confirmation == "y":
         # clear the Historical_data folder of all csv files
         for file in os.listdir(Historical_data_path):
-            print(f'{file} deleted')
+            print(f"{file} deleted")
             if file.endswith(".csv"):
                 os.remove(os.path.join(Historical_data_path, file))
 
 
+#clear_historical_data()

@@ -22,6 +22,7 @@ class Manager:
         self.cursor = self.conn.cursor()
         self.portfolio = {}
         self.rsi = []
+        self.macds = []
         self.orders = {"buys": 0, "sells": 0}
         self.account = Account(10000)
         self.symbol = symbol
@@ -104,20 +105,19 @@ class Manager:
         # MACD = 12 period EMA - 26 period EMA
         # Signal Line = 9 period EMA of MACD
 
-        macds, last_close_price = self.__calculate_macd(
-            symbol, period, interval, now, end
-        )
-        if len(macds) < 2:
+        last_close_price = self.__calculate_macd(symbol, period, interval, now, end)
+        if len(self.macds) < 2:
             return
-        if macds[0] < 0 and macds[1] > 0:
-            return self.buy_signal(1, last_close_price), macds
-        elif macds[0] > 0 and macds[1] < 0:
-            return self.sell_signal(1, last_close_price, "all"), macds
+        if self.macds[-1] > 0 and self.macds[-2] < 0:
+            return self.buy_signal(
+                self.account.balance / last_close_price, last_close_price
+            )
+        elif self.macds[-1] < 0 and self.macds[-2] > 0:
+            return self.sell_signal(1, last_close_price, "all")
 
         if now == end:
-            return self.sell_signal(1, last_close_price, "all"), macds
+            return self.sell_signal(1, last_close_price, "all")
 
-        return None, macds
     # -----------------------------------------------------------------------------------
     #                                Helper Functions
     # -----------------------------------------------------------------------------------
@@ -151,42 +151,49 @@ class Manager:
         return rsi
 
     def __calculate_macd(self, symbol: str, period: str, interval: str, now, end):
-        macds = []
         last_close_price = 0
         # select the last 27 rows
         self.cursor.execute(
-            "SELECT * FROM {} ORDER BY Id DESC LIMIT 27".format(
+            "SELECT * FROM {} ORDER BY Id DESC LIMIT 26".format(
                 f"{symbol}_{period}_{interval}"
             )
         )
         rows = self.cursor.fetchall()
 
-        # put all closes prices into list
-        if len(rows) >= 27:
-            close_prices = []
-            for i in range(len(rows)):
-                close_prices.append(rows[-i][4])
-            last_close_price = close_prices[0]
+        close_prices = []
+        for i in range(len(rows)):
+            close_prices.append(rows[-i][4])
+        last_close_price = close_prices[-1]
 
-            # calculate macd for first 26 periods
-            short_period = 12
-            long_period = 26
-            for j in range(2):
-                short_moving_average = 0
-                long_moving_average = 0
-                for i in range(short_period):
-                    short_moving_average += close_prices[i + j]
-                for i in range(long_period):
-                    long_moving_average += close_prices[i + j]
+        # calculate the 12 period EMA
+        ema = []
+        temp = 0
+        for i in range(11):
+            temp += close_prices[i]
+        ema.append(temp / 11)
 
-                short_moving_average = short_moving_average / short_period
-                long_moving_average = long_moving_average / long_period
+        ema12 = ema[-1] * (2 / (11 + 1)) + ema[-1] * (1 - (2 / (11 + 1)))
+        ema.append(ema12)
 
-                macd = short_moving_average - long_moving_average
-                macds.append(macd)
+        #calculate the 26 period EMA
+        temp = 0
+        for i in range(25):
+            temp += close_prices[i]
+        ema.append(temp / 25)
 
-            # calculate the MACD
-        return macds, last_close_price
+        ema26 = ema[-1] * (2 / (25 + 1)) + ema[-1] * (1 - (2 / (25 + 1)))
+        ema.append(ema26)
+
+        # calculate the MACD
+        macd = ema12 - ema26
+
+        # calculate the signal line
+        signal = 0
+        for i in range(8):
+            
+
+
+        return last_close_price
 
     def __find_RSI_min(self):
         pass
