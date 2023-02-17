@@ -22,7 +22,6 @@ class Manager:
         self.cursor = self.conn.cursor()
         self.portfolio = {}
         self.rsi = []
-        self.macd = []
         self.orders = {"buys": 0, "sells": 0}
         self.account = Account(10000)
 
@@ -43,13 +42,10 @@ class Manager:
         close_price = row[4]
         # execute one buy order at the first price
         if now == 1:
-            return self.buy_signal(1, close_price)
+            return self.buy_signal(self.account.balance / close_price, close_price)
         # execute one sell order at the last price
         if now == end:
-            return self.sell_signal(1, close_price, 'all')
-
-    def v2_test_strategy(self, symbol: str, period: str, interval: str, now, end):
-        pass
+            return self.sell_signal(1, close_price, "all")
 
     def test_strategy(self, symbol: str, period: str, interval: str, now, end):
         # if price of last period is greater than the price of the period before that and portfolio is 0, buy
@@ -73,14 +69,16 @@ class Manager:
         # if the price of the last period is greater than the price of the period before that and portfolio is 0, buy
         if close_prices[0] > close_prices[1]:
             self.portfolio = 1
-            return self.buy_signal(self.account.balance / close_prices[0], close_prices[0])
+            return self.buy_signal(
+                self.account.balance / close_prices[0], close_prices[0]
+            )
         # if the price of the last period is less than the price of the period before that and portfolio is 1, sell
         elif close_prices[0] < close_prices[1] and self.portfolio != 0:
             self.portfolio = 0
-            return self.sell_signal(1, close_prices[0], 'all')
+            return self.sell_signal(1, close_prices[0], "all")
 
         if now == end:
-            return self.sell_signal(1, close_prices[0], 'all')
+            return self.sell_signal(1, close_prices[0], "all")
 
         return
 
@@ -102,42 +100,20 @@ class Manager:
 
     def Macd_crossover(self, symbol: str, period: str, interval: str, now, end):
         # calculate MACD when it crosses over
-        # math stuff
         # MACD = 12 period EMA - 26 period EMA
         # Signal Line = 9 period EMA of MACD
 
-        # select the last 14 rows
-        self.cursor.execute(
-            "SELECT * FROM {} ORDER BY Id DESC LIMIT 14".format(
-                f"{symbol}_{period}_{interval}"
-            )
-        )
-        rows = self.cursor.fetchall()
-
-        # put the last 14 close prices into a list
-        close_prices = []
-        for i in range(14):
-            close_prices.append(rows[-i][4])
-
-        macd = self.__calculate_macd(close_prices)
-
-        # calculate the signal line
-        signal_line = 0
-        for i in range(9):
-            signal_line += macd[i]
-        signal_line = signal_line / 9
-
-        # if the MACD crosses over the signal line, buy
-        if macd[0] > signal_line[0] and macd[1] < signal_line[1]:
-            return self.buy_signal(1, close_prices[0])
-        # if the MACD crosses under the signal line, sell
-        elif macd[0] < signal_line[0] and macd[1] > signal_line[1]:
-            return self.sell_signal(1, close_prices[0], 'all')
-
+        macds, last_close_price = self.__calculate_macd(symbol, period, interval, now, end)
+        if len(macds) < 2:
+            return
+        if macds[0] < 0 and macds[1] > 0:
+            return self.buy_signal(1, last_close_price)
+        elif macds[0] > 0 and macds[1] < 0:
+            return self.sell_signal(1, 0, "all")
+        
         if now == end:
-            return self.sell_signal(1, close_prices[0], 'all')
+            return self.sell_signal(1, last_close_price, "all")
 
-        return
     # -----------------------------------------------------------------------------------
     #                                Helper Functions
     # -----------------------------------------------------------------------------------
@@ -171,38 +147,42 @@ class Manager:
         return rsi
 
     def __calculate_macd(self, symbol: str, period: str, interval: str, now, end):
-        
-        # select the last 14 rows
+        macds = []
+        last_close_price = 0
+        # select the last 27 rows
         self.cursor.execute(
-            "SELECT * FROM {} ORDER BY Id DESC LIMIT 1".format(
+            "SELECT * FROM {} ORDER BY Id DESC LIMIT 27".format(
                 f"{symbol}_{period}_{interval}"
             )
-        )        
+        )
         rows = self.cursor.fetchall()
 
         # put all closes prices into list
-        close_prices = []
-        for i in range(len(rows)):
-            close_prices.append(rows[-i][4])
+        if len(rows) >= 27:
+            close_prices = []
+            for i in range(len(rows)):
+                close_prices.append(rows[-i][4])
+            last_close_price = close_prices[0]
 
+            # calculate macd for first 26 periods
+            short_period = 12
+            long_period = 26
+            for j in range(2):
+                short_moving_average = 0
+                long_moving_average = 0
+                for i in range(short_period):
+                    short_moving_average += close_prices[i + j]
+                for i in range(long_period):
+                    long_moving_average += close_prices[i + j]
 
-        # calculate the 12 and 26 period moving averages
-        short_period = 12
-        long_period = 26
-        short_moving_average = 0
-        long_moving_average = 0
-        for i in range(short_period):
-            short_moving_average += close_prices[i]
-        for i in range(long_period):
-            long_moving_average += close_prices[i]
+                short_moving_average = short_moving_average / short_period
+                long_moving_average = long_moving_average / long_period
 
-        short_moving_average = short_moving_average / short_period
-        long_moving_average = long_moving_average / long_period
+                macd = short_moving_average - long_moving_average
+                macds.append(macd)
 
-        # calculate the MACD
-        macd = short_moving_average - long_moving_average
-
-        return macd
+            # calculate the MACD
+        return macds, last_close_price
 
     def __find_RSI_min(self):
         pass
@@ -221,6 +201,7 @@ class Manager:
             self.account.cost_basis += price * self.portfolio[price]
         self.account.cost_basis /= sum(self.portfolio.values())
         return self.account.cost_basis
+
     # -----------------------------------------------------------------------------------
     #                                    Order Functions
     # -----------------------------------------------------------------------------------
@@ -236,7 +217,7 @@ class Manager:
     def sell_signal(self, qty, price, order_type="all") -> str:
         if not self.portfolio:
             return "no shares to sell"
-        
+
         if order_type == "all":
             qty = sum(self.portfolio.values())
         self.account.balance += price * qty
@@ -276,4 +257,8 @@ class Manager:
         print("Buys: {}".format(self.orders["buys"]))
         print("Sells: {}".format(self.orders["sells"]))
         print("Balance: ${}".format(round(self.account.balance, 2)))
-        print("Profit: ${}".format(round(self.account.balance - self.account.get_principle(), 2)))
+        print(
+            "Profit: ${}".format(
+                round(self.account.balance - self.account.get_principle(), 2)
+            )
+        )

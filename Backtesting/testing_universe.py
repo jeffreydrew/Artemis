@@ -7,12 +7,21 @@ from Manager.manager import Manager
 import matplotlib.pyplot as plt
 import sqlite3
 
+assets_of_interest = [
+    "aapl",
+    "amzn",
+    "f",
+]
 if __name__ == "__main__":
+    # ------------------------------------------------------------------------------------------------------------
+    #                   Create a multiverse with universes seeded with every symbol of interest
+    # ------------------------------------------------------------------------------------------------------------
+
     # ---------------------------------------------------------
     #                   Prepare the universe
     # ---------------------------------------------------------
 
-    t = Time_Machine("1d", "5m", "tsla")
+    t = Time_Machine("2d", "5m", "aapl")
     m = Manager("Backtesting/testing.db")
 
     # create database
@@ -31,7 +40,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     #                   Run the universe
     # ---------------------------------------------------------
-    now = 1
+    now = 0
     while now < len(t.data):
         # visible is the first now rows of the data
         visible = t.data.iloc[:now, :]
@@ -64,9 +73,7 @@ if __name__ == "__main__":
         # ---------------------------------------------------------
         #                   Implement strategy
         # ---------------------------------------------------------
-        action = m.unit_test_strategy(
-            t.symbol, t.period, t.interval, now, len(t.data) - 1
-        )
+        action = m.Macd_crossover(t.symbol, t.period, t.interval, now, len(t.data) - 1)
         print(f"===================={action}====================")
 
         # ---------------------------------------------------------
