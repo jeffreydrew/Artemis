@@ -16,7 +16,7 @@ class Account:
 
 
 class Manager:
-    def __init__(self, database_path: str):
+    def __init__(self, database_path: str, symbol):
         self.database_path = database_path
         self.conn = sqlite3.connect(self.database_path)
         self.cursor = self.conn.cursor()
@@ -24,6 +24,7 @@ class Manager:
         self.rsi = []
         self.orders = {"buys": 0, "sells": 0}
         self.account = Account(10000)
+        self.symbol = symbol
 
     def commit(self):
         try:
@@ -103,14 +104,16 @@ class Manager:
         # MACD = 12 period EMA - 26 period EMA
         # Signal Line = 9 period EMA of MACD
 
-        macds, last_close_price = self.__calculate_macd(symbol, period, interval, now, end)
+        macds, last_close_price = self.__calculate_macd(
+            symbol, period, interval, now, end
+        )
         if len(macds) < 2:
             return
         if macds[0] < 0 and macds[1] > 0:
             return self.buy_signal(1, last_close_price)
         elif macds[0] > 0 and macds[1] < 0:
             return self.sell_signal(1, 0, "all")
-        
+
         if now == end:
             return self.sell_signal(1, last_close_price, "all")
 
@@ -254,11 +257,10 @@ class Manager:
     # -----------------------------------------------------------------------------------
 
     def show_order_summary(self):
-        print("Buys: {}".format(self.orders["buys"]))
-        print("Sells: {}".format(self.orders["sells"]))
-        print("Balance: ${}".format(round(self.account.balance, 2)))
-        print(
-            "Profit: ${}".format(
-                round(self.account.balance - self.account.get_principle(), 2)
-            )
-        )
+        return [
+            f"{self.symbol}",
+            f'{self.orders["buys"]}',
+            f'{self.orders["sells"]}',
+            f"{round(self.account.balance, 2)}",
+            f"{round(self.account.balance - self.account.get_principle(), 2)}",
+        ]
