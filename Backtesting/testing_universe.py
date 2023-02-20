@@ -8,14 +8,16 @@ import matplotlib.pyplot as plt
 import sqlite3
 
 assets_of_interest = [
-    # "aapl",
+    "aapl",
     # "amzn",
-    # "f",
-    "spy",
-    #"tsla",
+    # "spy",
+    # "tsla",
+    # "snap",
+    # "tds",
+    #'msft",
 ]
 
-period = "1y"
+period = "3mo"
 interval = "1d"
 
 """
@@ -52,7 +54,7 @@ if __name__ == "__main__":
         # # clear table
         # c.execute("DELETE FROM {}".format(f"{t.symbol}"))
         c.execute(
-            "CREATE TABLE IF NOT EXISTS {} (Id integer, Open real, High real, Low real, Close real, Volume real, Action text)".format(
+            "CREATE TABLE IF NOT EXISTS {} (Id integer, Open real, High real, Low real, Close real, Volume real)".format(
                 f"{t.symbol}_{t.period}_{t.interval}"
             )
         )
@@ -62,6 +64,8 @@ if __name__ == "__main__":
         # ---------------------------------------------------------
         now = 0
         while now < len(t.data):
+            print(f"Period: {now}")
+
             # visible is the first now rows of the data
             visible = t.data.iloc[:now, :]
 
@@ -72,10 +76,10 @@ if __name__ == "__main__":
             # row is 'now'th row of self.data
             row = t.data.iloc[now, :]
             # print everything in row except for Name
-            print(row)
+            # print(row)
             # insert the row into the database
             c.execute(
-                "INSERT INTO {} VALUES (?, ?, ?, ?, ?, ?, ?)".format(
+                "INSERT INTO {} VALUES (?, ?, ?, ?, ?, ?)".format(
                     f"{t.symbol}_{t.period}_{t.interval}"
                 ),
                 (
@@ -85,7 +89,6 @@ if __name__ == "__main__":
                     row["Low"],
                     row["Close"],
                     row["Volume"],
-                    "None",
                 ),
             )
             conn.commit()
@@ -96,7 +99,10 @@ if __name__ == "__main__":
             action = m.Macd_crossover(
                 t.symbol, t.period, t.interval, now, len(t.data) - 1
             )
-            print(f"===================={action}====================")
+            if action == "buy" or action == "sell":
+                print(row["Close"])
+                print(m.account.balance)
+                print(f"===================={action}====================")
 
             # ---------------------------------------------------------
             #                       Visualize
@@ -114,10 +120,9 @@ if __name__ == "__main__":
             plt.clf()  # if now == len(t.data) - 1 else plt.show()
             # find way to implement buy signal, will need some sort of persistance
 
-            print(now)
             now += 1
 
-            # visualize()
+            visualize()
 
         # simulation stats
         summaries.append(
@@ -127,8 +132,6 @@ if __name__ == "__main__":
                 f'Sells: {m.orders["sells"]}',
                 f"Balance: ${round(m.account.balance, 2)}",
                 f"Profits: ${round(m.account.balance - m.account.get_principle(), 2)}",
-                m.macds
-
             ]
         )
 
