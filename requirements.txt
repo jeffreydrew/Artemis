@@ -3,3 +3,4 @@ alpaca-py
 discord.py
 yfinance
 pytest
+openai

@@ -190,7 +190,7 @@ class Manager:
         # calculate the signal line
         signal = 0
         for i in range(8):
-            
+            pass
 
 
         return last_close_price
