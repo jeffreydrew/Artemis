@@ -8,7 +8,7 @@ from responses import *
 from Trader.simple_buy import *
 
 intents = discord.Intents.all()
-# intents.message_content = True
+intents.message_content = True
 
 
 async def send_message(message, user_message, is_private):
@@ -48,6 +48,7 @@ def run_artemis():
             await send_message(message, user_message, False)
 
     client.run(token)
+
 
 if __name__ == "__main__":
     run_artemis()

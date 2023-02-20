@@ -17,4 +17,7 @@ USERNAME = 'Artemis_bot#4990'
 #Polygon:
 API_KEY_POLYGON = "qxopP6_J4g7SNqKAFlq8lqEFwufYg80L"
 
+#OpenAI:
+OPENAI_API_KEY = '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'
+
 
