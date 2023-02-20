@@ -26,7 +26,7 @@ def handle_responses(message) -> str:
 
     if p_message[0] == '/':
         response = openai.Completion.create(
-            model="text-curie-001",
+            model="text-babbage-001",
             prompt=p_message[1:],
             temperature=0.7,
             max_tokens=256,
