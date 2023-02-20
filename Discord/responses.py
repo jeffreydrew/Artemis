@@ -29,9 +29,9 @@ def handle_responses(message) -> str:
             model="text-babbage-001",
             prompt=p_message[1:],
             temperature=0.7,
-            max_tokens=256,
-            top_p=1,
-            frequency_penalty=1.2,
-            presence_penalty=0.5,
+            max_tokens=150,
+            top_p=0.5,
+            frequency_penalty=0.5,
+            presence_penalty=0,
         )
         return response['choices'][0]['text']
