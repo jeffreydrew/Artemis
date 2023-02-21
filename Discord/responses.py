@@ -34,7 +34,7 @@ def handle_responses(message) -> str:
             frequency_penalty=0.5,
             presence_penalty=0,
         )
-        return response['choices'][0]['text']
+        return response['choices'][0]['text'] + 'text-davinci-003'
     elif p_message[0:2] == '///':
         response = openai.Completion.create(
             model="text-curie-001",
@@ -45,7 +45,7 @@ def handle_responses(message) -> str:
             frequency_penalty=0.5,
             presence_penalty=0,
         )
-        return response['choices'][0]['text']
+        return response['choices'][0]['text'] + 'text-curie-001'
     elif p_message[0:1] == '//':
         response = openai.Completion.create(
             model="text-babbage-001",
@@ -56,7 +56,7 @@ def handle_responses(message) -> str:
             frequency_penalty=0.5,
             presence_penalty=0,
         )
-        return response['choices'][0]['text']
+        return response['choices'][0]['text'] + 'text-babbage-001'
     elif p_message[0:1] == '/':
         response = openai.Completion.create(
             model="text-ada-001",
@@ -67,4 +67,4 @@ def handle_responses(message) -> str:
             frequency_penalty=0.5,
             presence_penalty=0,
         )
-        return response['choices'][0]['text']
+        return response['choices'][0]['text'] + 'text-ada-001'
