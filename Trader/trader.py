@@ -62,7 +62,7 @@ class Trader:
                     type="market",
                     time_in_force="gtc",
                 )
-
+        
     def create_trade_receipt(self):
         #return a receipt of the trade
         pass

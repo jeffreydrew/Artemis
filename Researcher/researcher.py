@@ -2,11 +2,34 @@ import os, sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import yfinance as yf
-
+import sqlite3
 
 class Researcher:
-    def __init__(self):
-        pass
+    def __init__(self, path, symbol, period, interval):
+        self.path = path
+        self.symbol = symbol
+        self.period = period
+        self.interval = interval
+        self.conn = sqlite3.connect(self.path)
+        self.cursor = self.conn.cursor()
+
+    #--------------------------------------------------
+    #                   Database stuff
+    #--------------------------------------------------
+
+    def create_table(self):
+        
+        self.cursor.execute(
+            "DROP TABLE IF EXISTS {}".format(f"{self.symbol}_{self.period}_{self.interval}")
+        )
+        # # clear table
+        # c.execute("DELETE FROM {}".format(f"{t.symbol}"))
+        self.cursor.execute(
+            "CREATE TABLE IF NOT EXISTS {} (Id integer, Open real, High real, Low real, Close real, Volume real)".format(
+                f"{self.symbol}_{self.period}_{self.interval}"
+            )
+        )
+
 
     def get_last_ticker(self, symbol: str):
         # get 1 minute ticker info for aapl from today
@@ -14,6 +37,7 @@ class Researcher:
         ticker_data = ticker.history(period="1d", interval="1m")
         return ticker_data.iloc[-1]
 
+    
 
-r = Researcher()
-print(r.get_last_ticker("aapl"))
+
+

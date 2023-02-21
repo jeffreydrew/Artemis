@@ -8,16 +8,16 @@ import matplotlib.pyplot as plt
 import sqlite3
 
 assets_of_interest = [
-    "aapl",
+    # "aapl",
     # "amzn",
-    # "spy",
+    "spy",
     # "tsla",
     # "snap",
     # "tds",
     #'msft",
 ]
 
-period = "3mo"
+period = "1y"
 interval = "1d"
 
 """
@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
             now += 1
 
-            visualize()
+            # visualize()
 
         # simulation stats
         summaries.append(

@@ -3,7 +3,11 @@ calculate slope of rsi based on last three points and next point to find local m
 when three minimums rising and price is falling, momentum inversion and enter
 
 Backtesting:
-make plot show when buy and when sell
 
-make plot concurrently show rsi
 
+
+Paper testing:
+take data from yfin and set 'now' to last
+
+Communication:
+at a certain time of day, send a message to discord with the summary of all trades during the day

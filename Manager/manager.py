@@ -27,7 +27,8 @@ class Manager:
         self.orders = {"buys": 0, "sells": 0}
         self.account = Account(10000)
         self.symbol = symbol
-        self.stop_loss = 0.005
+        self.stop_loss = 0.01
+
 
     def commit(self):
         try:
@@ -133,9 +134,12 @@ class Manager:
 
             # if now == end:
             #     return self.sell_signal(1, last_close_price, "all")
+
+            #liquidate at end to mitigate overnight risk
             if now == end:
                 return self.sell_signal(1, last_close_price, "all")
 
+            #buy signal
             if (
                 self.macds[now] > self.macd_signals[now]
                 and self.macds[now - 1] < self.macd_signals[now - 1]
@@ -143,6 +147,8 @@ class Manager:
                 return self.buy_signal(
                     self.account.balance / last_close_price, last_close_price
                 )
+
+            #sell signal
             elif (
                 self.macds[now] < self.macd_signals[now]
                 and self.macds[now - 1] > self.macd_signals[now - 1]
