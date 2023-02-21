@@ -24,7 +24,7 @@ def handle_responses(message) -> str:
     if p_message == "bye":
         return "See you later!"
 
-    if p_message[0:3] == '////':
+    if p_message[0:4] == '////':
         response = openai.Completion.create(
             model="text-davinci-003",
             prompt=p_message[1:],
@@ -35,7 +35,7 @@ def handle_responses(message) -> str:
             presence_penalty=0,
         )
         return response['choices'][0]['text'] + 'text-davinci-003'
-    elif p_message[0:2] == '///':
+    elif p_message[0:3] == '///':
         response = openai.Completion.create(
             model="text-curie-001",
             prompt=p_message[1:],
@@ -46,7 +46,7 @@ def handle_responses(message) -> str:
             presence_penalty=0,
         )
         return response['choices'][0]['text'] + 'text-curie-001'
-    elif p_message[0:1] == '//':
+    elif p_message[0:2] == '//':
         response = openai.Completion.create(
             model="text-babbage-001",
             prompt=p_message[1:],
@@ -57,7 +57,7 @@ def handle_responses(message) -> str:
             presence_penalty=0,
         )
         return response['choices'][0]['text'] + 'text-babbage-001'
-    elif p_message[0:1] == '/':
+    elif p_message[0] == '/':
         response = openai.Completion.create(
             model="text-ada-001",
             prompt=p_message[1:],
