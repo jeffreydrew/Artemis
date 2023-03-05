@@ -155,6 +155,57 @@ class Manager:
             ):
                 return self.sell_signal(1, last_close_price, "all")
 
+    def Macd_crossover_deploy(self, symbol: str, period: str, interval: str, now, end):
+        # calculate MACD when it crosses over
+        # MACD = 12 period EMA - 26 period EMA
+        # Signal Line = 9 period EMA of MACD
+        self.__calculate_macd(symbol, period, interval, now, end)
+        self.__macd_signal_line(now)
+
+        if (
+            not isinstance(self.macds[now], str)
+            and not isinstance(self.macds[now - 1], str)
+            and not isinstance(self.macd_signals[now], str)
+            and not isinstance(self.macd_signals[now - 1], str)
+        ):
+            # get the last entry in the database
+            self.cursor.execute(
+                "SELECT * FROM {} ORDER BY Id DESC LIMIT 1".format(
+                    f"{symbol}_{period}_{interval}"
+                )
+            )
+            row = self.cursor.fetchone()
+            last_close_price = row[4]
+
+            # if self.macds[-1] > 0 and self.macds[-2] < 0:
+            #     return self.buy_signal(
+            #         self.account.balance / last_close_price, last_close_price
+            #     )
+            # elif self.macds[-1] < 0 and self.macds[-2] > 0:
+            #     return self.sell_signal(1, last_close_price, "all")
+
+            # if now == end:
+            #     return self.sell_signal(1, last_close_price, "all")
+
+            #liquidate at end to mitigate overnight risk
+            if now == end:
+                return self.sell_signal(1, last_close_price, "all")
+
+            #buy signal
+            if (
+                self.macds[now] > self.macd_signals[now]
+                and self.macds[now - 1] < self.macd_signals[now - 1]
+            ):
+                return self.buy_signal(
+                    self.account.balance / last_close_price, last_close_price
+                )
+
+            #sell signal
+            elif (
+                self.macds[now] < self.macd_signals[now]
+                and self.macds[now - 1] > self.macd_signals[now - 1]
+            ):
+                return self.sell_signal(1, last_close_price, "all")
     # -----------------------------------------------------------------------------------
     #                                Helper Functions
     # -----------------------------------------------------------------------------------
@@ -302,6 +353,11 @@ class Manager:
         self.portfolio = {}
         return
 
+    def buy_deploy(self, qty):
+        return 'buy'
+    
+    def sell_deploy(self, qty):
+        return 'sell'
     # -----------------------------------------------------------------------------------
     #                                    Results
     # -----------------------------------------------------------------------------------
