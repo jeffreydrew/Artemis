@@ -18,6 +18,10 @@ class Researcher:
     #                   Database stuff
     # --------------------------------------------------
 
+    def clear_table(self):
+        self.cursor.execute("DELETE FROM {}".format(f"{self.symbol}_{self.period}_{self.interval}"))
+        self.conn.commit()
+
     def create_table(self):
         self.cursor.execute(
             "DROP TABLE IF EXISTS {}".format(
@@ -27,18 +31,18 @@ class Researcher:
         # # clear table
         # c.execute("DELETE FROM {}".format(f"{t.symbol}"))
         self.cursor.execute(
-            "CREATE TABLE IF NOT EXISTS {} (Id integer, Open real, High real, Low real, Close real, Volume real)".format(
+            "CREATE TABLE IF NOT EXISTS {} (Time text, Open real, High real, Low real, Close real, Volume real)".format(
                 f"{self.symbol}_{self.period}_{self.interval}"
             )
         )
 
-    def add_candle(self, candle):
+    def add_candle(self, candle, time):
         self.cursor.execute(
             "INSERT INTO {} VALUES (?, ?, ?, ?, ?, ?)".format(
                 f"{self.symbol}_{self.period}_{self.interval}"
             ),
             (
-                candle["Id"],
+                time, #date, minutes
                 candle["Open"],
                 candle["High"],
                 candle["Low"],

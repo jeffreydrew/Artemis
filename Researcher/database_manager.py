@@ -3,6 +3,8 @@ import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import sqlite3
 from Researcher.researcher import *
+from datetime import date
+import time
 
 CANDLES = "Researcher/candles.db"
 
@@ -54,5 +56,20 @@ def add_last_candle(path):
 
 # manage the table
 if __name__ == "__main__":
-    create_table()
-    add_last_candle()
+    r = Researcher(CANDLES, "SPY", "1d", "1m")
+    r.create_table()
+
+    while True:
+        # if seconds is 01
+        if time.localtime().tm_sec == 1:
+            index = f'{date.today()} {time.strftime("%H:%M", time.localtime(time.time() - 60))}'
+
+            last = r.get_last_ticker()
+            
+            r.add_candle(last, index)
+
+            print(
+                f"Added candle successfully: {index} {last.Open} {last.High} {last.Low} {last.Close} {last.Volume}"
+            )
+            # wait 60 seconds
+            time.sleep(60)
