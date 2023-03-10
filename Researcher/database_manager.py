@@ -57,19 +57,22 @@ def add_last_candle(path):
 # manage the table
 if __name__ == "__main__":
     r = Researcher(CANDLES, "SPY", "1d", "1m")
-    r.create_table()
+    r.clear_table()
+    r.create_table('test')
 
-    while True:
-        # if seconds is 01
-        if time.localtime().tm_sec == 1:
-            index = f'{date.today()} {time.strftime("%H:%M", time.localtime(time.time() - 60))}'
+    # while True:
+    #     # if seconds is 01
+    #     if time.localtime().tm_sec == 1:
+    #         index = f'{date.today()} {time.strftime("%H:%M", time.localtime(time.time() - 60))}'
 
-            last = r.get_last_ticker()
+    #         last = r.get_last_ticker()
             
-            r.add_candle(last, index)
+    #         r.add_candle(last, index)
 
-            print(
-                f"Added candle successfully: {index} {last.Open} {last.High} {last.Low} {last.Close} {last.Volume}"
-            )
-            # wait 60 seconds
-            time.sleep(60)
+    #         print(
+    #             f"Added candle successfully: {index} {last.Open} {last.High} {last.Low} {last.Close} {last.Volume}"
+    #         )
+    #         # wait 60 seconds
+    #         time.sleep(60)
+
+    r.update_table()

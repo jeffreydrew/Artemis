@@ -1,7 +1,9 @@
 import os, sys
+import talib
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import pandas as pd
 import sqlite3
 
 
@@ -36,6 +38,9 @@ class Manager:
         except:
             print("Error committing to database")
 
+    #----------------------------------------------------------------------------------
+    #                               Strategies
+    #----------------------------------------------------------------------------------
     def unit_test_strategy(self, symbol: str, period: str, interval: str, now, end):
         # get last close price
         self.cursor.execute(
@@ -206,6 +211,11 @@ class Manager:
                 and self.macds[now - 1] > self.macd_signals[now - 1]
             ):
                 return self.sell_signal(1, last_close_price, "all")
+   
+    def Macd_v2():
+        #take all data from database and turn into a dataframe
+
+        return
     # -----------------------------------------------------------------------------------
     #                                Helper Functions
     # -----------------------------------------------------------------------------------

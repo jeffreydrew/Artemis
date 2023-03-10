@@ -36,6 +36,27 @@ class Researcher:
             )
         )
 
+        self.conn.commit()
+
+    def create_table(self, test):
+        if test=='test':
+
+            self.cursor.execute(
+                "DROP TABLE IF EXISTS {}".format(
+                    f"{self.symbol}_{self.period}_{self.interval}"
+                )
+            )
+            # # clear table
+            # c.execute("DELETE FROM {}".format(f"{t.symbol}"))
+            self.cursor.execute(
+                "CREATE TABLE IF NOT EXISTS {} (Open real, High real, Low real, Close real, Volume real)".format(
+                    f"{self.symbol}_{self.period}_{self.interval}"
+                )
+            )
+
+            self.conn.commit()
+
+
     def add_candle(self, candle, time):
         self.cursor.execute(
             "INSERT INTO {} VALUES (?, ?, ?, ?, ?, ?)".format(
@@ -52,6 +73,22 @@ class Researcher:
         )
         self.conn.commit()
 
+    def add_candle(self, candle):
+        self.cursor.execute(
+            "INSERT INTO {} VALUES (?, ?, ?, ?, ?)".format(
+                f"{self.symbol}_{self.period}_{self.interval}"
+            ),
+            (
+                candle["Open"],
+                candle["High"],
+                candle["Low"],
+                candle["Close"],
+                candle["Volume"],
+            ),
+        )
+        self.conn.commit()
+
+
     def get_last_ticker(self):
         # get 1 minute ticker info for aapl from today
         ticker = yf.Ticker(self.symbol)
@@ -59,3 +96,8 @@ class Researcher:
         return ticker_data.iloc[-1]
 
 
+    def update_table(self):
+        bars = yf.Ticker(self.symbol).history(period=self.period, interval=self.interval)
+        
+        for i in range(len(bars)):
+            self.add_candle(bars.iloc[i])
