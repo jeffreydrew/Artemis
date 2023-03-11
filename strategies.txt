@@ -17,3 +17,11 @@ find three rising rsi lows, find price matching lower
 darvas box
 
 pinbar method
+
+
+MACD crossover:
+buy signal:
+    when macdhist crosses zero up
+
+sell signal:
+    
