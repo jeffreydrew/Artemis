@@ -41,7 +41,7 @@ class NewManager:
     def strategy_macd(self):
         #if price is less than stoploss, sell everything
         #reconsider stoploss implementation !!!!
-        
+
         price = self.bars.iloc[-1]["close"]
         if price < self.last_buy_price * (1 - self.stop_loss):
             self.sell(self.portfolio, price)
@@ -63,8 +63,6 @@ class NewManager:
 
     def market_sell(self, qty):
         pass
-
-
 
 
     def see_macds(self):
