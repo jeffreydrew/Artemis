@@ -1,11 +1,3 @@
-class RSI:
-    pass
+import datetime
 
-class Price:
-    pass
-
-r = RSI()
-p = Price()
-
-#r.movement() = !p.movement()
-
+print(datetime.datetime.now())
