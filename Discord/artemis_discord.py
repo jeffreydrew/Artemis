@@ -48,6 +48,7 @@ def run_artemis():
         else:
             await send_message(message, user_message, False)
 
+    
     client.run(token)
 
 

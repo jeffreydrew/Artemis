@@ -1,6 +1,6 @@
 #Alpaca:
-PAPER_KEY = "PKKZSVR4ICWFB6YOHU04"
-PAPER_SECRET = "DOmo6768EcYl4J8SEzZ7Fd6mAAgfMv91BCHIOdNp"
+PAPER_KEY = "PKBPTJPOE9WHBFWTJIKV"
+PAPER_SECRET = "2hslejHj9qCsAmUBvigIpqi9g57WeKYEq51RnTLw"
 PAPER_URL = "https://paper-api.alpaca.markets"
 
 #Artemis Discord Bot
