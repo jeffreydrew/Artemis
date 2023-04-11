@@ -45,7 +45,7 @@ class NewManager:
     def set_macds(self):
         # macd signal
         # consider using macd on open price instead of close, backtest on this
-        _, _, macdhist = talib.MACD(self.bars["Close"])
+        _, _, macdhist = ta.MACD(self.bars["Close"])
         return macdhist
 
     def update_manager(self):
