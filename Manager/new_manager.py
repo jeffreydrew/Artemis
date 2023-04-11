@@ -1,5 +1,5 @@
 import os, sys
-import talib
+import talib as ta
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -77,6 +77,9 @@ class NewManager:
                 return
             else:
                 self.market_sell()
+
+
+
 
     # --------------------------------------------------------
     #                      Market functions
