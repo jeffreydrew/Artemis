@@ -7,7 +7,8 @@ from discord import ui, app_commands
 from datetime import datetime
 from discord_openai_module import *
 
-brownieGamma = os.environ.get("GAMMATOKEN")
+token = os.getenv("JRTOKEN")
+# brownieGamma = os.environ.get("GAMMATOKEN")
 
 
 class client(discord.Client):
@@ -92,4 +93,4 @@ async def on_message(message):
         await message.channel.send(message.content)
 
 
-aclient.run(brownieGamma)
+aclient.run(token)
